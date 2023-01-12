@@ -52,12 +52,12 @@ public class Newton {
     public static void main(String[] args) {
 
         // Build the Newton's Approximation problem to be solved: cos(x) = x
-        Newton newton = new Newton("cos(x) - x", (double x) -> Math.cos(x) - x, (double x) -> -Math.sin(x) - 1);
+        Newton newton = new Newton("ln(x)-ln(x+1)+1", (double x) -> Math.log(x) - Math.log(x+1) + 1, (double x) -> 1 / (x * x +x));
 
         // Solve the problem starting with a value of x = 1;
         // requiring a precision of 10^-7;
         // and giving up after 200 tries.
-        Either<String, Double> result = newton.solve(1.0, 200, 1E-7);
+        Either<String, Double> result = newton.solve(0.5, 200, 1E-7);
 
         // Process the result
         result.apply(
