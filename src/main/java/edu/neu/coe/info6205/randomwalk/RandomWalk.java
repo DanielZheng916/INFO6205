@@ -8,6 +8,11 @@ import java.util.Random;
 
 public class RandomWalk {
 
+//    public static int[][] directions = {{1,0},
+//                                        {0,1},
+//                                        {-1,0},
+//                                        {0,-1}};
+
     private int x = 0;
     private int y = 0;
 
@@ -21,7 +26,8 @@ public class RandomWalk {
      */
     private void move(int dx, int dy) {
         // FIXME do move by replacing the following code
-         throw new RuntimeException("Not implemented");
+         x += dx;
+         y += dy;
         // END 
     }
 
@@ -32,6 +38,11 @@ public class RandomWalk {
      */
     private void randomWalk(int m) {
         // FIXME
+        for (int i = 0; i < m; i++) {
+//            int direction = random.nextInt(4);
+//            move(directions[direction][0], directions[direction][1]);
+            randomMove();
+        }
         // END 
     }
 
@@ -52,7 +63,7 @@ public class RandomWalk {
      */
     public double distance() {
         // FIXME by replacing the following code
-         return 0.0;
+         return Math.sqrt(x*x + y*y);
         // END 
     }
 
