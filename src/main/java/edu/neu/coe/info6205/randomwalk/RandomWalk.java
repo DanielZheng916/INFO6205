@@ -85,13 +85,28 @@ public class RandomWalk {
     }
 
     public static void main(String[] args) {
-        if (args.length == 0)
-            throw new RuntimeException("Syntax: RandomWalk steps [experiments]");
-        int m = Integer.parseInt(args[0]);
+//        if (args.length == 0)
+//            throw new RuntimeException("Syntax: RandomWalk steps [experiments]");
+//        int m = Integer.parseInt(args[0]);
+//        int n = 30;
+//        if (args.length > 1) n = Integer.parseInt(args[1]);
+//        double meanDistance = randomWalkMulti(m, n);
+//        System.out.println(m + " steps: " + meanDistance + " over " + n + " experiments");
+        int m = 2;
         int n = 30;
-        if (args.length > 1) n = Integer.parseInt(args[1]);
-        double meanDistance = randomWalkMulti(m, n);
-        System.out.println(m + " steps: " + meanDistance + " over " + n + " experiments");
+//        for (int i = 0; i < 20; i++) {
+//            double meanDistance = randomWalkMulti(m, n);
+////            System.out.println(m + " steps: " + meanDistance + " over " + n + " experiments");
+////            System.out.println(m);
+//            System.out.println(meanDistance);
+//            m *= 2;
+//        }
+        n = 1000;
+        for (m = 1000; m < 7000; m += 1000) {
+            double meanDistance = randomWalkMulti(m, n);
+            double predictDistance = 0.8578515987*Math.pow(m, 0.4998);
+            System.out.println(m + " steps experiment distance: " + meanDistance + ", predict distance: " + predictDistance);
+        }
     }
 
 }
