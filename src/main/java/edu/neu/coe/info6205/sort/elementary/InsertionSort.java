@@ -14,6 +14,11 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
+/**
+ * Class InsertionSort.
+ *
+ * @param <X> the underlying comparable type.
+ */
 public class InsertionSort<X extends Comparable<X>> extends SortWithHelper<X> {
 
     /**
