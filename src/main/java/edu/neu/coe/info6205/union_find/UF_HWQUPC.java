@@ -8,6 +8,8 @@
 package edu.neu.coe.info6205.union_find;
 
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Stack;
 
 /**
  * Height-weighted Quick Union with Path Compression
@@ -82,6 +84,16 @@ public class UF_HWQUPC implements UF {
         validate(p);
         int root = p;
         // FIXME
+        if (parent[p] != p) {
+            if (pathCompression) {
+                doPathCompression(p);
+                root = parent[p];
+            } else {
+                while (parent[root] != root) {
+                    root = parent[root];
+                }
+            }
+        }
         // END 
         return root;
     }
@@ -170,6 +182,14 @@ public class UF_HWQUPC implements UF {
 
     private void mergeComponents(int i, int j) {
         // FIXME make shorter root point to taller one
+        if (height[i] > height[j]) {
+            parent[j] = i;
+        } else if (height[i] < height[j]) {
+            parent[i] = j;
+        } else {
+            parent[j] = i;
+            height[i]++;
+        }
         // END 
     }
 
@@ -178,6 +198,38 @@ public class UF_HWQUPC implements UF {
      */
     private void doPathCompression(int i) {
         // FIXME update parent to value of grandparent
+        Stack<Integer> parents = new Stack<>();
+        while (parent[i] != i) {
+            parents.push(i);
+            i = parent[i];
+        }
+        while (parents.size()!= 0) {
+            parent[parents.pop()] = i;
+        }
         // END 
+    }
+
+    public static void count(int n) {
+        UF_HWQUPC uf = new UF_HWQUPC(n);
+        Random rd = new Random();
+        int numOfConnection = 0;
+        while (uf.components() > 1) {
+            int n1 = rd.nextInt(n);
+            int n2 = rd.nextInt(n);
+            if (n1 != n2) {
+                boolean connection = uf.isConnected(n1, n2);
+                if (!connection) {
+                    uf.union(n1, n2);
+                    numOfConnection++;
+                }
+            }
+        }
+        System.out.println(n + " sites, generate " + numOfConnection + "connections.");
+    }
+    public static void main(String[] args) {
+        int base = 5000;
+        for (int i = 1; i <= 10; i++) {
+            count(i*base);
+        }
     }
 }
