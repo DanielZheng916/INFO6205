@@ -209,27 +209,36 @@ public class UF_HWQUPC implements UF {
         // END 
     }
 
-    public static void count(int n) {
-        UF_HWQUPC uf = new UF_HWQUPC(n);
-        Random rd = new Random();
-        int numOfConnection = 0;
-        while (uf.components() > 1) {
-            int n1 = rd.nextInt(n);
-            int n2 = rd.nextInt(n);
-            if (n1 != n2) {
-                boolean connection = uf.isConnected(n1, n2);
-                if (!connection) {
-                    uf.union(n1, n2);
-                    numOfConnection++;
+    public static void count(int n, int m) {
+        int numOfConnection = 0, numOfPairs=0;
+        for (int i = 0; i < m; i++) {
+            UF_HWQUPC uf = new UF_HWQUPC(n);
+            Random rd = new Random();
+            while (uf.components() > 1) {
+                int n1 = rd.nextInt(n);
+                int n2 = rd.nextInt(n);
+                if (n1 != n2) {
+                    numOfPairs++;
+                    boolean connection = uf.isConnected(n1, n2);
+                    if (!connection) {
+                        uf.union(n1, n2);
+                        numOfConnection++;
+                    }
                 }
             }
         }
-        System.out.println(n + " sites, generate " + numOfConnection + "connections.");
+
+        System.out.println(n + " sites, generate " + numOfConnection/m + "connections, generate "+numOfPairs/m+" pairs.");
     }
     public static void main(String[] args) {
         int base = 5000;
+//        for (int i = 1; i <= 10; i++) {
+//            count(i*base, 10);
+//        }
+        base = 5000;
         for (int i = 1; i <= 10; i++) {
-            count(i*base);
+            base *= 2;
+            count(base, 10);
         }
     }
 }
