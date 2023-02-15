@@ -18,7 +18,10 @@ public class Main {
 
     public static void main(String[] args) {
         processArgs(args);
-        System.out.println("Degree of parallelism: " + ForkJoinPool.getCommonPoolParallelism());
+//        System.out.println("Degree of parallelism: " + ForkJoinPool.getCommonPoolParallelism());
+        // customize thread pool
+        int threadCount = 32;
+        ForkJoinPool myPool = new ForkJoinPool(threadCount);
         Random random = new Random();
         int[] array = new int[2000000];
         ArrayList<Long> timeList = new ArrayList<>();
@@ -29,7 +32,7 @@ public class Main {
             long startTime = System.currentTimeMillis();
             for (int t = 0; t < 10; t++) {
                 for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
-                ParSort.sort(array, 0, array.length);
+                ParSort.sort(array, 0, array.length, myPool);
             }
             long endTime = System.currentTimeMillis();
             time = (endTime - startTime);
