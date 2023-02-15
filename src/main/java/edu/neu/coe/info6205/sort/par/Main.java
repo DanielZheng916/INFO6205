@@ -24,9 +24,24 @@ public class Main {
         ForkJoinPool myPool = new ForkJoinPool(threadCount);
         Random random = new Random();
         int[] array = new int[2000000];
-        ArrayList<Long> timeList = new ArrayList<>();
-        for (int j = 50; j < 100; j++) {
+        System.out.println("Warm Up Start");
+        for (int j = 50; j < 60; j++) {
             ParSort.cutoff = 10000 * (j + 1);
+            // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
+            long time;
+            long startTime = System.currentTimeMillis();
+            for (int t = 0; t < 10; t++) {
+                for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
+                ParSort.sort(array, 0, array.length, myPool);
+            }
+            long endTime = System.currentTimeMillis();
+            time = (endTime - startTime);
+
+        }
+        System.out.println("Warm Up End");
+        ArrayList<Long> timeList = new ArrayList<>();
+        for (int j = 1; j <= 500; j++) {
+            ParSort.cutoff = 4000 * j;
             // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
             long time;
             long startTime = System.currentTimeMillis();
@@ -43,12 +58,12 @@ public class Main {
 
         }
         try {
-            FileOutputStream fis = new FileOutputStream("./src/result.csv");
+            FileOutputStream fis = new FileOutputStream("./src/result_cutoff.csv");
             OutputStreamWriter isr = new OutputStreamWriter(fis);
             BufferedWriter bw = new BufferedWriter(isr);
-            int j = 0;
+            int j = 1;
             for (long i : timeList) {
-                String content = (double) 10000 * (j + 1) / 2000000 + "," + (double) i / 10 + "\n";
+                String content = (double) 4000 * j + "," + (double) i / 10 + "\n";
                 j++;
                 bw.write(content);
                 bw.flush();
