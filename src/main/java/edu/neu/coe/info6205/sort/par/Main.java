@@ -18,30 +18,30 @@ public class Main {
 
     public static void main(String[] args) {
         processArgs(args);
-//        System.out.println("Degree of parallelism: " + ForkJoinPool.getCommonPoolParallelism());
+        testCutoff(32000000);
+    }
+
+    private static void testCutoff(int size) {
+        //        System.out.println("Degree of parallelism: " + ForkJoinPool.getCommonPoolParallelism());
         // customize thread pool
         int threadCount = 32;
         ForkJoinPool myPool = new ForkJoinPool(threadCount);
         Random random = new Random();
-        int[] array = new int[2000000];
+        int[] array = new int[size];
         System.out.println("Warm Up Start");
         for (int j = 50; j < 60; j++) {
             ParSort.cutoff = 10000 * (j + 1);
             // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
-            long time;
-            long startTime = System.currentTimeMillis();
             for (int t = 0; t < 10; t++) {
                 for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
                 ParSort.sort(array, 0, array.length, myPool);
             }
-            long endTime = System.currentTimeMillis();
-            time = (endTime - startTime);
-
         }
         System.out.println("Warm Up End");
         ArrayList<Long> timeList = new ArrayList<>();
-        for (int j = 1; j <= 500; j++) {
-            ParSort.cutoff = 4000 * j;
+        ParSort.cutoff = 2000;
+        while (ParSort.cutoff < size) {
+            ParSort.cutoff *= 2;
             // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
             long time;
             long startTime = System.currentTimeMillis();
@@ -58,13 +58,63 @@ public class Main {
 
         }
         try {
-            FileOutputStream fis = new FileOutputStream("./src/result_cutoff.csv");
+            FileOutputStream fis = new FileOutputStream("./src/result_cutoff_"+size+".csv");
             OutputStreamWriter isr = new OutputStreamWriter(fis);
             BufferedWriter bw = new BufferedWriter(isr);
             int j = 1;
             for (long i : timeList) {
                 String content = (double) 4000 * j + "," + (double) i / 10 + "\n";
-                j++;
+                j*=2;
+                bw.write(content);
+                bw.flush();
+            }
+            bw.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void testThread() {
+        ParSort.cutoff = 250000;
+        Random random = new Random();
+        int[] array = new int[2000000];
+        System.out.println("Warm Up Start");
+        for (int threadCount = 1; threadCount <= 256; threadCount *= 2) {
+            ForkJoinPool myPool = new ForkJoinPool(threadCount);
+            for (int t = 0; t < 10; t++) {
+                for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
+                ParSort.sort(array, 0, array.length, myPool);
+            }
+
+        }
+        System.out.println("Warm Up End");
+        ArrayList<Long> timeList = new ArrayList<>();
+        for (int threadCount = 1; threadCount <= 4096; threadCount *= 2) {
+            ForkJoinPool myPool = new ForkJoinPool(threadCount);
+            // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
+            long time;
+            long startTime = System.currentTimeMillis();
+            for (int t = 0; t < 10; t++) {
+                for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
+                ParSort.sort(array, 0, array.length, myPool);
+            }
+            long endTime = System.currentTimeMillis();
+            time = (endTime - startTime);
+            timeList.add(time);
+
+
+            System.out.println("Thread：" + (threadCount) + "\t\t10times Time:" + time + "ms");
+
+        }
+        try {
+            FileOutputStream fis = new FileOutputStream("./src/result_thread.csv");
+            OutputStreamWriter isr = new OutputStreamWriter(fis);
+            BufferedWriter bw = new BufferedWriter(isr);
+            int j = 1;
+            for (long i : timeList) {
+                String content = (int) j + "," + (double) i / 10 + "\n";
+                j *= 2;
                 bw.write(content);
                 bw.flush();
             }
