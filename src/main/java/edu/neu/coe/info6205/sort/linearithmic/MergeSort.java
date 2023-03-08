@@ -71,17 +71,20 @@ public class MergeSort<X extends Comparable<X>> extends SortWithHelper<X> {
             sort(aux, a, mid, to);
             if (insurance) {
                 if (helper.less(aux[mid-1],aux[mid])) {
-                    X[] temp  = a;
-                    a = aux;
-                    aux = temp;
+                    for (int i = from; i < to; i++) {
+                        a[i] = aux[i];
+                    }
+                } else {
+                    merge(aux, a, from, mid, to);
                 }
+            } else {
+                merge(aux, a, from, mid, to);
             }
-            merge(aux, a, from, mid, to);
         } else {
             sort(a, aux, from, mid);
             sort(a, aux, mid, to);
             if (insurance) {
-                if (helper.less(aux[mid-1],aux[mid])) {
+                if (helper.less(a[mid-1],a[mid])) {
                     // do nothing
                 } else {
                     // merge
