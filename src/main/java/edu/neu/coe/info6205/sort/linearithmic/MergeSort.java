@@ -66,16 +66,31 @@ public class MergeSort<X extends Comparable<X>> extends SortWithHelper<X> {
 
         // FIXME : implement merge sort with insurance and no-copy optimizations
         int mid = from + (to - from) / 2;
-        sort(aux, a, from, mid);
-        sort(aux, a, mid, to);
-        if (insurance) {
-            if (helper.less(aux[mid-1],aux[mid])) {
-                X[] temp  = a;
-                a = aux;
-                aux = temp;
+        if (noCopy) {
+            sort(aux, a, from, mid);
+            sort(aux, a, mid, to);
+            if (insurance) {
+                if (helper.less(aux[mid-1],aux[mid])) {
+                    X[] temp  = a;
+                    a = aux;
+                    aux = temp;
+                }
+            }
+            merge(aux, a, from, mid, to);
+        } else {
+            sort(a, aux, from, mid);
+            sort(a, aux, mid, to);
+            if (insurance) {
+                if (helper.less(aux[mid-1],aux[mid])) {
+                    // do nothing
+                } else {
+                    // merge
+                    mergeWithCopy(a, from, mid, to);
+                }
+            } else {
+                mergeWithCopy(a, from, mid, to);
             }
         }
-        merge(aux, a, from, mid, to);
         // END 
     }
 
@@ -91,6 +106,22 @@ public class MergeSort<X extends Comparable<X>> extends SortWithHelper<X> {
                 helper.incrementFixes(mid - i);
                 helper.copy(sorted, j++, result, k);
             } else helper.copy(sorted, i++, result, k);
+    }
+
+    private void mergeWithCopy(X[] arr, int from, int mid, int to) {
+        final Helper<X> helper = getHelper();
+        final X[] arr1 = Arrays.copyOfRange(arr, from, mid);
+        final X[] arr2 = Arrays.copyOfRange(arr, mid, to);
+//        helper.incrementCopies(to-from);
+        int i = 0;
+        int j = 0;
+        for (int k = from; k < to; k++)
+            if (i >= mid-from) helper.copy(arr2, j++, arr, k);
+            else if (j >= to-mid) helper.copy(arr1, i++, arr, k);
+            else if (helper.less(arr2[j], arr1[i])) {
+                helper.incrementFixes(mid - i - from);
+                helper.copy(arr2, j++, arr, k);
+            } else helper.copy(arr1, i++, arr, k);
     }
 
     public static final String MERGESORT = "mergesort";
